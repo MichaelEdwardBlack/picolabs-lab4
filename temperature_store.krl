@@ -56,11 +56,13 @@ ruleset temperature_store {
     }
   }
 
+/*
   rule clear_temperatures {
     select when sensor reading_reset
 
     pre {
-      ent:temperature_readings := {};
+      ent:temperature_readings = {};
     }
   }
+  */
 }
