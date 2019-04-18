@@ -1,7 +1,37 @@
-ruleset temperature_store {
+ruleset com.blacklite.krl.temperature_store {
   meta {
     name "Temperature Store"
     author "Michael Black"
+
+    shares __testing, temperatures, threshold_violations, inrange_temperatures
+  }
+
+  global {
+    temperatures = function() {
+      ent:temperature_readings
+    }
+
+    threshold_violations = function() {
+      ent:temperature_violations
+    }
+
+    inrange_temperatures = function() {
+      temperatures = ent:temperature_readings;
+      violations = ent:temperature_violations;
+
+      filtered_temps = temperatures.filter(function(v,k) {
+        violations.get(k.klog("key: ")).klog("violation value: ").isnull()
+      });
+
+      filtered_temps
+    }
+
+    __testing = {
+      "queries":[ {"name": "__testing"},
+                  {"name": "temperatures"},
+                  {"name": "threshold_violations"},
+                  {"name": "inrange_temperatures"} ]
+    }
 
   }
 
@@ -23,10 +53,10 @@ ruleset temperature_store {
       timestamp = event:attrs{"timestamp"}
     }
 
-    //if (temperature.isnull() || timestamp.isnull()) then noop()
+    if (not temperature.isnull() && not timestamp.isnull()) then noop()
 
     fired {
-      ent:temperature_readings{timestamp} := temperature;
+      ent:temperature_readings{timestamp} := temperature[0]{"temperatureF"}.decode();
     }
   }
 
@@ -48,21 +78,21 @@ ruleset temperature_store {
       timestamp = event:attrs{"timestamp"}
     }
 
-    //if (tempF.isnull() || timestamp.isnull()) then noop();
+    if (not tempF.isnull() && not timestamp.isnull()) then noop();
 
     fired {
-      ent:violated_temp := tempF;
-      ent:violated_timestamp := timestamp;
+      ent:temperature_violations{timestamp} := tempF;
     }
   }
 
-/*
   rule clear_temperatures {
     select when sensor reading_reset
 
-    pre {
-      ent:temperature_readings = {};
+    noop()
+
+    fired {
+      ent:temperature_readings := {};
+      ent:temperautre_violations := {};
     }
   }
-  */
 }
