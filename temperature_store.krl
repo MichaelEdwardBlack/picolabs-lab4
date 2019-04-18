@@ -3,6 +3,8 @@ ruleset com.blacklite.krl.temperature_store {
     name "Temperature Store"
     author "Michael Black"
 
+    provides temperatures, threshold_violations, inrange_temperatures
+
     shares __testing, temperatures, threshold_violations, inrange_temperatures
   }
 
