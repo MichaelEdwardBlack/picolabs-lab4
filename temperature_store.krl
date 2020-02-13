@@ -32,7 +32,8 @@ ruleset com.blacklite.krl.temperature_store {
       "queries":[ {"name": "__testing"},
                   {"name": "temperatures"},
                   {"name": "threshold_violations"},
-                  {"name": "inrange_temperatures"} ]
+                  {"name": "inrange_temperatures"} ],
+      "events": [ {"domain": "sensor", "type": "reading_reset"} ]
     }
 
   }
